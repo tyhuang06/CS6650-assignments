@@ -1,0 +1,122 @@
+openapi: 3.0.0
+info:
+  title: Album Store API
+  description: CS6650 Fall 2023
+  contact:
+    email: i.gorton@northeasern.edu
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/IGORTON/AlbumStore/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /albums:
+    post:
+      summary: Returns the new key and size of an image in bytes.
+      operationId: newAlbum
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/albums_body'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/imageMetaData'
+        "400":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMsg'
+  /albums/{albumID}:
+    get:
+      summary: get album by key
+      operationId: getAlbumByKey
+      parameters:
+      - name: albumID
+        in: path
+        description: path  parameter is album key to retrieve
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: JSON data for album info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/albumInfo'
+        "400":
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMsg'
+        "404":
+          description: Key not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorMsg'
+components:
+  schemas:
+    imageMetaData:
+      type: object
+      properties:
+        albumID:
+          type: string
+        imageSize:
+          type: string
+      example:
+        albumID: albumID
+        imageSize: imageSize
+    albumInfo:
+      type: object
+      properties:
+        artist:
+          type: string
+          description: album performers
+          example: Sex Pistols
+        title:
+          type: string
+          description: album title
+          example: Never Mind The Bollocks!
+        year:
+          type: string
+          description: year released
+          example: "1977"
+      example:
+        artist: Sex Pistols
+        year: "1977"
+        title: Never Mind The Bollocks!
+    errorMsg:
+      type: object
+      properties:
+        msg:
+          type: string
+    albums_profile:
+      type: object
+      properties:
+        artist:
+          type: string
+        title:
+          type: string
+        year:
+          type: string
+    albums_body:
+      type: object
+      properties:
+        image:
+          type: string
+          format: binary
+        profile:
+          $ref: '#/components/schemas/albums_profile'
