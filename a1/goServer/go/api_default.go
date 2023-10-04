@@ -10,15 +10,94 @@
 package swagger
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 )
+
+type Album struct {
+	Artist string `json:"artist"`
+	Title  string `json:"title"`
+	Year   int    `json:"year"`
+}
+
+type ImageData struct {
+	AlbumId string `json:"albumId"`
+	Size    string `json:"imageSize"`
+}
 
 func GetAlbumByKey(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	urlString := r.URL.String()
+
+	if urlString == "" {
+		http.Error(w, "missing parameters", http.StatusNotFound)
+		return
+	}
+
+	urlSplit := strings.Split(urlString, "/")
+	albumId := urlSplit[2]
+
+	if albumId != "" {
+		resp, jsonErr := json.Marshal(Album{
+			Artist: "Sex Pistols",
+			Title:  "Never Mind The Bollocks!",
+			Year:   1977,
+		})
+		if jsonErr != nil {
+			http.Error(w, jsonErr.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		_, err := w.Write(resp)
+		if err != nil {
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		_, err := w.Write([]byte("404 - Key Not Found"))
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 }
 
 func NewAlbum(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	err := r.ParseMultipartForm(32 << 20)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	image, header, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer image.Close()
+
+	size := strconv.Itoa(int(header.Size))
+	resp, err := json.Marshal(ImageData{
+		AlbumId: "test",
+		Size:    size,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
