@@ -22,6 +22,8 @@ public class AlbumServlet extends HttpServlet {
     res.setContentType("application/json");
     String urlPath = req.getPathInfo();
 
+    System.out.println("urlPath: " + urlPath);
+
     // check we have a URL!
     if (urlPath == null || urlPath.isEmpty()) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
