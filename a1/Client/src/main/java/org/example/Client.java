@@ -31,7 +31,7 @@ public class Client {
 
     // Results
     double wallTime = (double) (endTime - startTime) / 1000;
-    double throughput = (double) (numThreadGroups * threadGroupSize) / wallTime;
+    double throughput = (double) ((numThreadGroups * threadGroupSize) * 1000) / wallTime;
     System.out.println("Wall time: " + wallTime + " seconds");
     System.out.println("Throughput: " + throughput + " requests/second");
   }
@@ -40,7 +40,7 @@ public class Client {
     // Create threads
     Thread[] threads = new Thread[threadGroupSize];
     for (int i = 0; i < threadGroupSize; i++) {
-      threads[i] = new Thread(new AlbumThread(100, SERVER_URL, latch));
+      threads[i] = new Thread(new AlbumThread(1000, SERVER_URL, latch));
     }
 
     // Start threads

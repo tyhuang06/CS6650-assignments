@@ -22,8 +22,6 @@ public class AlbumServlet extends HttpServlet {
     res.setContentType("application/json");
     String urlPath = req.getPathInfo();
 
-    System.out.println("urlPath: " + urlPath);
-
     // check we have a URL!
     if (urlPath == null || urlPath.isEmpty()) {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -57,8 +55,6 @@ public class AlbumServlet extends HttpServlet {
 
     // Check we have a valid image part
     Part image = req.getPart("image");
-    System.out.println("image: " + image);
-    System.out.println("image.getContentType(): " + image.getContentType());
     if (image == null || !image.getContentType().startsWith("image/")) {
       res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       res.getWriter().write("invalid image");
