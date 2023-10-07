@@ -14,19 +14,14 @@ public class AlbumThread implements Runnable {
   private CountDownLatch latch;
   private DefaultApi api;
 
-  public AlbumThread(int requests, String serverURL, CountDownLatch latch) {
+  public AlbumThread(int requests, CountDownLatch latch, DefaultApi api) {
     this.requests = requests;
-    this.serverURL = serverURL;
     this.latch = latch;
-    this.api = new DefaultApi();
-    this.api.getApiClient().setBasePath(serverURL);
+    this.api = api;
   }
 
   @Override
   public void run() {
-    long startTime;
-    long endTime;
-
     // POST /album
     for (int i = 0; i < this.requests; i++) {
       sendApiRequest("POST");

@@ -8,8 +8,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client {
-  protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
+  //protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
+  protected static final String SERVER_URL = "http://ec2-34-222-136-164.us-west-2.compute.amazonaws.com:8080/javaServer_war";
   private static final String OUTPUT_FILE_PATH = "/Users/tyhuang/Downloads/output.csv";
+  //private static final String OUTPUT_FILE_PATH = "output.csv";
+  //protected static final String SERVER_URL = "http://localhost:8080";
+  //protected static final String SERVER_URL = "http://ec2-34-222-136-164.us-west-2.compute.amazonaws.com:8080";
 
   public Client() {
   }
@@ -46,7 +50,7 @@ public class Client {
 
     // Results
     double wallTime = (double) (endTime - startTime) / 1000;
-    double throughput = (double) ((numThreadGroups * threadGroupSize) * 1000) / wallTime;
+    double throughput = (double) ((numThreadGroups * threadGroupSize) * 2000) / wallTime;
     System.out.println("Wall time: " + wallTime + " seconds");
     System.out.println("Throughput: " + throughput + " requests/second");
 
@@ -78,16 +82,10 @@ public class Client {
     Collections.sort(times);
 
     double sum = 0;
-    double min = Double.MAX_VALUE;
-    double max = Double.MIN_VALUE;
+    double min = times.get(0);
+    double max = times.get(times.size() - 1);
     for (double time : times) {
       sum += time;
-      if (time < min) {
-        min = time;
-      }
-      if (time > max) {
-        max = time;
-      }
     }
     double mean = sum / times.size();
     double median = times.get(times.size() / 2);
@@ -104,7 +102,7 @@ public class Client {
     // Create threads
     Thread[] threads = new Thread[threadGroupSize];
     for (int i = 0; i < threadGroupSize; i++) {
-      threads[i] = new Thread(new AlbumThread(1000, SERVER_URL, latch, queue));
+      threads[i] = new Thread(new AlbumThread(100, SERVER_URL, latch, queue));
     }
 
     // Start threads
