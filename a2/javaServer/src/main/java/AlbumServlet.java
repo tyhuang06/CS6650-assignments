@@ -17,7 +17,14 @@ import javax.servlet.http.Part;
         maxRequestSize = 1024 * 1024 * 100)    // 100 MB
 public class AlbumServlet extends HttpServlet {
   private Gson gson = new Gson();
+  private DbService dbService = new DbService();
 
+  @Override
+  public void init() {
+    this.dbService = new DbService();
+  }
+
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     res.setContentType("application/json");
     String urlPath = req.getPathInfo();
@@ -41,6 +48,7 @@ public class AlbumServlet extends HttpServlet {
     res.getWriter().write(json);
   }
 
+  @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
     res.setContentType("application/json");
 
