@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static java.lang.Thread.sleep;
+
 public class Client {
-  //protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
+  private static final int CALLS_PER_THREAD = 100;
+  // protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
   protected static final String SERVER_URL = "http://ec2-54-188-53-71.us-west-2.compute.amazonaws.com:8080/javaServer_war";
   private static final String OUTPUT_FILE_PATH = "/Users/tyhuang/Downloads/output.csv";
-  //private static final String OUTPUT_FILE_PATH = "output.csv";
-  //protected static final String SERVER_URL = "http://localhost:8080";
-  //protected static final String SERVER_URL = "http://ec2-34-222-136-164.us-west-2.compute.amazonaws.com:8080";
 
   public Client() {
   }
@@ -23,7 +25,14 @@ public class Client {
     int threadGroupSize = 10;
     int numThreadGroups = 10;
     long delay = 2;
-    CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize);
+
+    // Threads
+    int maxThreads = numThreadGroups * threadGroupSize;
+    int totalCalls = CALLS_PER_THREAD * maxThreads * 2;
+
+    // Setup service and latch
+    ExecutorService servicePool = Executors.newFixedThreadPool(maxThreads);
+    CountDownLatch latch = new CountDownLatch(maxThreads);
     BlockingQueue<Statistics> queue = new LinkedBlockingQueue<>(100);
 
     System.out.println("Starting client with " + numThreadGroups + " thread groups of " + threadGroupSize + " threads each");
@@ -37,10 +46,16 @@ public class Client {
 
     // Run threads
     for (int i = 0; i < numThreadGroups; i++) {
-      runThreadGroup(threadGroupSize, latch, queue);
-      Thread.sleep(delay * 1000);
+      for (int j = 0; j < threadGroupSize; j++) {
+        servicePool.execute(new AlbumThread(CALLS_PER_THREAD, SERVER_URL, latch, queue));
+      }
+
+      sleep(delay * 1000);
     }
+
+    // Shutdown executor service
     latch.await();
+    servicePool.shutdown();
 
     // End output thread
     outputThread.join();
@@ -96,27 +111,5 @@ public class Client {
     System.out.println("Mean: " + mean);
     System.out.println("Median: " + median);
     System.out.println("99th percentile: " + percentile99);
-  }
-
-  private static void runThreadGroup(int threadGroupSize, CountDownLatch latch, BlockingQueue queue) {
-    // Create threads
-    Thread[] threads = new Thread[threadGroupSize];
-    for (int i = 0; i < threadGroupSize; i++) {
-      threads[i] = new Thread(new AlbumThread(100, SERVER_URL, latch, queue));
-    }
-
-    // Start threads
-    for (int i = 0; i < threadGroupSize; i++) {
-      threads[i].start();
-    }
-
-    // Wait for threads to finish
-    for (int i = 0; i < threadGroupSize; i++) {
-      try {
-        threads[i].join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
   }
 }

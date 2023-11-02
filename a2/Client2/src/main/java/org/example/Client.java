@@ -1,6 +1,7 @@
 package org.example;
 
 import java.io.BufferedReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
@@ -8,8 +9,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client {
-  //protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
-  protected static final String SERVER_URL = "http://ec2-54-188-53-71.us-west-2.compute.amazonaws.com:8080/javaServer_war";
+  protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
+  //protected static final String SERVER_URL = "http://ec2-54-188-53-71.us-west-2.compute.amazonaws.com:8080/javaServer_war";
   private static final String OUTPUT_FILE_PATH = "/Users/tyhuang/Downloads/output.csv";
   //private static final String OUTPUT_FILE_PATH = "output.csv";
   //protected static final String SERVER_URL = "http://localhost:8080";
@@ -20,6 +21,7 @@ public class Client {
 
   public static void main(String[] args) throws InterruptedException {
     // Starting variables
+    int numRequests = 1000;
     int threadGroupSize = 10;
     int numThreadGroups = 10;
     long delay = 2;
@@ -37,7 +39,7 @@ public class Client {
 
     // Run threads
     for (int i = 0; i < numThreadGroups; i++) {
-      runThreadGroup(threadGroupSize, latch, queue);
+      runThreadGroup(threadGroupSize, latch, queue, numRequests);
       Thread.sleep(delay * 1000);
     }
     latch.await();
@@ -72,6 +74,10 @@ public class Client {
       e.printStackTrace();
     }
 
+    int successfulRequests = (postTimes.size() + getTimes.size()) / 100;
+    System.out.println("Successful requests: " + successfulRequests);
+    System.out.println("Failed requests: " + (numRequests * 2 - successfulRequests));
+
     System.out.println("POST times:");
     printStats(postTimes);
     System.out.println("GET times:");
@@ -98,11 +104,11 @@ public class Client {
     System.out.println("99th percentile: " + percentile99);
   }
 
-  private static void runThreadGroup(int threadGroupSize, CountDownLatch latch, BlockingQueue queue) {
+  private static void runThreadGroup(int threadGroupSize, CountDownLatch latch, BlockingQueue queue, int numRequests) {
     // Create threads
     Thread[] threads = new Thread[threadGroupSize];
     for (int i = 0; i < threadGroupSize; i++) {
-      threads[i] = new Thread(new AlbumThread(100, SERVER_URL, latch, queue));
+      threads[i] = new Thread(new AlbumThread(numRequests, SERVER_URL, latch, queue));
     }
 
     // Start threads
