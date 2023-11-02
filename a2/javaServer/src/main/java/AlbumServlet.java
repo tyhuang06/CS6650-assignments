@@ -44,7 +44,9 @@ public class AlbumServlet extends HttpServlet {
     }
 
     res.setStatus(HttpServletResponse.SC_OK);
-    String json = gson.toJson(new Album("Sex Pistols", "Never Mind The Bollocks!", 1977));
+    // get album by id
+    Album album = this.dbService.getAlbumById(urlPath.substring(1));
+    String json = gson.toJson(album);
     res.getWriter().write(json);
   }
 
@@ -70,11 +72,23 @@ public class AlbumServlet extends HttpServlet {
     }
 
     res.setStatus(HttpServletResponse.SC_OK);
+
+    // Create new album object
+    Album album = new Album("Sex Pistols", "Never Mind The Bollocks!", 1977);
+
     // Get image information
     try (InputStream stream = image.getInputStream()) {
       int size = stream.available();
-      String json = gson.toJson(new ImageData("testID", String.valueOf(size)));
-      res.getWriter().write(json);
+      byte[] array = new byte[size];
+
+      // update image
+      stream.read(array);
+      album.setImage(array);
+
+      // post album to db
+      String id = this.dbService.postAlbum(album);
+
+      res.getWriter().write(id);
     } catch (IOException e) {
       res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       res.getWriter().write("internal server error");

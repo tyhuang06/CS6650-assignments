@@ -7,6 +7,14 @@
         <element id="directory" name="classes">
           <element id="module-output" name="javaServer" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.mongodb:mongodb-driver-sync:4.11.0" />
+          <element id="library" level="project" name="Maven: org.mongodb:mongodb-driver-core:4.11.0" />
+          <element id="library" level="project" name="Maven: org.mongodb:bson:4.11.0" />
+          <element id="library" level="project" name="Maven: org.mongodb:bson-record-codec:4.11.0" />
+          <element id="library" level="project" name="Maven: javax.servlet:javax.servlet-api:4.0.1" />
+          <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.10.1" />
+        </element>
       </element>
     </root>
   </artifact>
