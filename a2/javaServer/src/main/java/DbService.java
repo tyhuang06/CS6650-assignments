@@ -21,11 +21,14 @@ public class DbService {
     this.gson = new Gson();
   }
 
-  public Album getAlbumById(String id) {
+  public String getAlbumById(String id) {
     Document doc = this.albumsCollection.find(new Document("_id", new ObjectId(id))).first();
-    Album album = this.gson.fromJson(doc.toJson(), Album.class);
 
-    return album;
+    if (doc == null) {
+      return null;
+    }
+
+    return doc.toJson();
   }
 
   public String postAlbum(Album album) {

@@ -45,8 +45,7 @@ public class AlbumServlet extends HttpServlet {
 
     res.setStatus(HttpServletResponse.SC_OK);
     // get album by id
-    Album album = this.dbService.getAlbumById(urlPath.substring(1));
-    String json = gson.toJson(album);
+    String json = this.dbService.getAlbumById(urlPath.substring(1));
     res.getWriter().write(json);
   }
 
