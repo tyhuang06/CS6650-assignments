@@ -31,14 +31,16 @@ public class DbService {
     return doc.toJson();
   }
 
-  public String postAlbum(Album album) {
+  public String postAlbum(byte[] image, Album album) {
     Document doc = new Document("artist", album.getArtist())
       .append("title", album.getTitle())
       .append("year", album.getYear())
-      .append("image", album.getImage());
+      .append("image", image);
 
     this.albumsCollection.insertOne(doc);
 
-    return doc.getObjectId("_id").toString();
+    String json = gson.toJson(new ImageData(doc.getObjectId("_id").toString(), Integer.toString(image.length)));
+
+    return json;
   }
 }

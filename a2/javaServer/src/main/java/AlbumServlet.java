@@ -82,10 +82,9 @@ public class AlbumServlet extends HttpServlet {
 
       // update image
       stream.read(array);
-      album.setImage(array);
 
       // post album to db
-      String id = this.dbService.postAlbum(album);
+      String id = this.dbService.postAlbum(array, album);
 
       res.getWriter().write(id);
     } catch (IOException e) {

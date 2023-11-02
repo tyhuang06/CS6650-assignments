@@ -23,7 +23,7 @@ public class Client {
     // Starting variables
     int numRequests = 1000;
     int threadGroupSize = 10;
-    int numThreadGroups = 20;
+    int numThreadGroups = 30;
     long delay = 2;
     CountDownLatch latch = new CountDownLatch(numThreadGroups * threadGroupSize);
     BlockingQueue<Statistics> queue = new LinkedBlockingQueue<>(100);
@@ -76,7 +76,7 @@ public class Client {
 
     int successfulRequests = (postTimes.size() + getTimes.size());
     System.out.println("Successful requests: " + successfulRequests);
-    System.out.println("Failed requests: " + (numRequests * 2 - successfulRequests));
+    System.out.println("Failed requests: " + (numRequests * 2 * numThreadGroups * threadGroupSize - successfulRequests));
 
     System.out.println("POST times:");
     printStats(postTimes);

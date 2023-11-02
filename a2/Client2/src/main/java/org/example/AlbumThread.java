@@ -63,7 +63,7 @@ public class AlbumThread implements Runnable {
     while (attempts < MAX_ATTEMPTS) {
       try {
         if (type.equals("GET")) {
-          AlbumInfo result = this.api.getAlbumByKey("albumID");
+          AlbumInfo result = this.api.getAlbumByKey("65440ab77500cd0d7f1b3cba");
         } else if (type.equals("POST")) {
           File image = new File("src/main/java/nmtb.png");
           AlbumsProfile album = new AlbumsProfile().artist("Sex Pistols").title("Never Mind The Bollocks!").year("1977");
