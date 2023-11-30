@@ -46,15 +46,10 @@ public class DbService {
   }
 
   public String postLike(String id, int value) {
-    Document doc = this.albumsCollection.find(new Document("_id", new ObjectId(id))).first();
-
-    if (doc == null) {
-      return null;
-    }
-
     Document likeDoc = new Document("$inc", new Document("likes", value));
-    this.albumsCollection.updateOne(doc, likeDoc, new UpdateOptions().upsert(true));
+    ObjectId objectId = new ObjectId(id);
+    this.albumsCollection.updateOne(new Document("_id", objectId), likeDoc, new UpdateOptions().upsert(true));
 
-    return doc.toJson();
+    return "success";
   }
 }

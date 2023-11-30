@@ -89,8 +89,8 @@ public class Client {
 
     System.out.println("POST times:");
     printStats(postTimes);
-    System.out.println("GET times:");
-    printStats(getTimes);
+    // System.out.println("GET times:");
+    // printStats(getTimes);
   }
 
   private static void printStats(ArrayList<Double> times) {

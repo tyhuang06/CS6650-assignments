@@ -41,7 +41,7 @@ public class ReviewServlet extends HttpServlet {
         };
 
         channel.basicQos(50000);
-        channel.basicConsume(rabbitMQConnection.getQueueName(), false, deliverCallback, consumerTag -> {
+        channel.basicConsume(rabbitMQConnection.getQueueName(), true, deliverCallback, consumerTag -> {
         });
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -80,9 +80,6 @@ public class ReviewServlet extends HttpServlet {
     Channel channel = rabbitMQConnection.getChannel();
     String likeOrDislike = urlPathParts[1];
     String albumId = urlPathParts[2];
-
-    System.out.println("likeOrDislike: " + likeOrDislike);
-    System.out.println("albumId: " + albumId);
 
     if (likeOrDislike.equals("like")) {
       channel.basicPublish("", rabbitMQConnection.getQueueName(), null, (albumId + ",1").getBytes());
