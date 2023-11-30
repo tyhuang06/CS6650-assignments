@@ -43,4 +43,17 @@ public class DbService {
 
     return json;
   }
+
+  public String postLike(String id, int value) {
+    Document doc = this.albumsCollection.find(new Document("_id", new ObjectId(id))).first();
+
+    if (doc == null) {
+      return null;
+    }
+
+    Document likeDoc = new Document("$inc", new Document("likes", value));
+    this.albumsCollection.updateOne(doc, likeDoc);
+
+    return doc.toJson();
+  }
 }

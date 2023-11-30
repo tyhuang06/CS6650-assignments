@@ -93,9 +93,6 @@ public class AlbumServlet extends HttpServlet {
     }
   }
 
-  // Another servlet endpoint to do like/dislike requests
-  
-
   private boolean isUrlValid(String urlPath, String method) {
     return true;
   }
