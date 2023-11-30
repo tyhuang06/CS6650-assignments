@@ -4,6 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -52,7 +53,7 @@ public class DbService {
     }
 
     Document likeDoc = new Document("$inc", new Document("likes", value));
-    this.albumsCollection.updateOne(doc, likeDoc);
+    this.albumsCollection.updateOne(doc, likeDoc, new UpdateOptions().upsert(true));
 
     return doc.toJson();
   }

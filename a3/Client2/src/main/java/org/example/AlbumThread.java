@@ -5,6 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 import io.swagger.client.api.DefaultApi;
+import io.swagger.client.api.LikeApi;
 import io.swagger.client.model.AlbumInfo;
 import io.swagger.client.model.AlbumsProfile;
 import io.swagger.client.model.ImageMetaData;
@@ -14,6 +15,7 @@ public class AlbumThread implements Runnable {
   private String serverURL;
   private CountDownLatch latch;
   private DefaultApi api;
+  private LikeApi likeApi;
   private BlockingQueue<Statistics> queue;
 
   public AlbumThread(int requests, String serverURL, CountDownLatch latch, BlockingQueue queue) {
@@ -23,6 +25,8 @@ public class AlbumThread implements Runnable {
     this.queue = queue;
     this.api = new DefaultApi();
     this.api.getApiClient().setBasePath(serverURL);
+    this.likeApi = new LikeApi();
+    this.likeApi.getApiClient().setBasePath(serverURL);
   }
 
   @Override
@@ -30,11 +34,6 @@ public class AlbumThread implements Runnable {
     // POST /album
     for (int i = 0; i < this.requests; i++) {
       trackTime("POST");
-    }
-
-    // GET /album/{albumID}
-    for (int i = 0; i < this.requests; i++) {
-      trackTime("GET");
     }
 
     this.latch.countDown();
@@ -68,6 +67,12 @@ public class AlbumThread implements Runnable {
           File image = new File("src/main/java/nmtb.png");
           AlbumsProfile album = new AlbumsProfile().artist("Sex Pistols").title("Never Mind The Bollocks!").year("1977");
           ImageMetaData result = this.api.newAlbum(image, album);
+
+          // Post two likes and one dislike
+          String albumID = result.getAlbumID();
+          this.likeApi.review("like", albumID);
+          this.likeApi.review("like", albumID);
+          this.likeApi.review("dislike", albumID);
         }
         break;
       } catch (Exception e) {

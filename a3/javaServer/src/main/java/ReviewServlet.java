@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ReviewServlet", value = "/reviews/*")
+@WebServlet(name = "ReviewServlet", value = "/review/*")
 public class ReviewServlet extends HttpServlet {
   private Gson gson = new Gson();
   private DbService dbService = new DbService();
@@ -67,6 +67,7 @@ public class ReviewServlet extends HttpServlet {
     res.setContentType("application/json");
 
     String urlPath = req.getPathInfo();
+    String urlPathParts[] = urlPath.split("/");
 
     // and now validate url path and return the response status code
 //    if (!isUrlValid(urlPath, "POST")) {
@@ -77,8 +78,11 @@ public class ReviewServlet extends HttpServlet {
 
     // post with rabbitmq
     Channel channel = rabbitMQConnection.getChannel();
-    String likeOrDislike = urlPath.substring(1);
-    String albumId = urlPath.substring(2);
+    String likeOrDislike = urlPathParts[1];
+    String albumId = urlPathParts[2];
+
+    System.out.println("likeOrDislike: " + likeOrDislike);
+    System.out.println("albumId: " + albumId);
 
     if (likeOrDislike.equals("like")) {
       channel.basicPublish("", rabbitMQConnection.getQueueName(), null, (albumId + ",1").getBytes());

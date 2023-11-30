@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static java.lang.Thread.sleep;
 
 public class Client {
-  private static final int CALLS_PER_THREAD = 1000;
+  private static final int CALLS_PER_THREAD = 100;
   protected static final String SERVER_URL = "http://localhost:8080/javaServer_war_exploded";
   //protected static final String SERVER_URL = "http://ec2-54-188-53-71.us-west-2.compute.amazonaws.com:8080/javaServer_war";
   private static final String OUTPUT_FILE_PATH = "/Users/tyhuang/Downloads/output.csv";
